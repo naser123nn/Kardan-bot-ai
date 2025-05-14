@@ -1,30 +1,45 @@
 
-async function sendMessage() {
-  const input = document.getElementById("user-input").value;
-  const lang = document.getElementById("language").value;
-  if (!input.trim()) return;
+const chatbox = document.getElementById("chatbox");
+const userInput = document.getElementById("userInput");
+const languageSelect = document.getElementById("language");
 
-  const chatBox = document.getElementById("chat-box");
-  chatBox.innerHTML += `<div><strong>شما:</strong> ${input}</div>`;
+function sendMessage() {
+    const msg = userInput.value.trim();
+    const lang = languageSelect.value;
+    if (msg === "") return;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer YOUR_API_KEY"
-    },
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: lang === "fa" ? "پاسخ‌ها را به زبان فارسی بده." : "Answer in English." },
-        { role: "user", content: input }
-      ]
+    appendMessage(msg, "user");
+    userInput.value = "";
+    chatbox.scrollTop = chatbox.scrollHeight;
+
+    fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_API_KEY_HERE"
+        },
+        body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: lang === "fa" ? "تو یک دستیار فارسی هستی." : "You are an English assistant." },
+                { role: "user", content: msg }
+            ]
+        })
     })
-  });
+    .then(res => res.json())
+    .then(data => {
+        const reply = data.choices[0].message.content;
+        appendMessage(reply, "bot");
+        chatbox.scrollTop = chatbox.scrollHeight;
+    })
+    .catch(err => {
+        appendMessage("خطا در ارتباط با هوش مصنوعی / Error connecting to AI", "bot");
+    });
+}
 
-  const data = await res.json();
-  const reply = data.choices?.[0]?.message?.content || "خطا در دریافت پاسخ";
-  chatBox.innerHTML += `<div><strong>ربات:</strong> ${reply}</div>`;
-  document.getElementById("user-input").value = "";
-  chatBox.scrollTop = chatBox.scrollHeight;
+function appendMessage(text, sender) {
+    const div = document.createElement("div");
+    div.className = "message " + sender;
+    div.textContent = text;
+    chatbox.appendChild(div);
 }
