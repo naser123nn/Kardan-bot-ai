@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Chatbot</title>
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <h1>چت‌بات دو زبانه</h1>
+    <select id="language">
+      <option value="fa">فارسی</option>
+      <option value="en">English</option>
+    </select>
+    <div id="chat-box"></div>
+    <textarea id="user-input" placeholder="پیام خود را بنویسید..."></textarea>
+    <button onclick="sendMessage()">ارسال</button>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
